@@ -1,0 +1,5 @@
+database_root: /mnt/Datasets/tfr/output/8k_mars_1024_256/images
+query_root: /mnt/Datasets/tfr/mars-1/
+methods: ['xfeat', 'sift']
+benchmark: 'imloc'
+root_dir: '.'
