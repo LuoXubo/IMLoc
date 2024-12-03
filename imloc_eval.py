@@ -39,7 +39,9 @@ class IMLoc:
     
     def load_dataset(self):
         # Load database
-        self.database = sorted(os.listdir(self.database_root))
+        self.database = os.listdir(self.database_root)
+        self.database.sort(key=lambda x:int(x.split('_')[0]))
+        
         # Load query
         with open(self.query_list, 'r') as f:
             self.query = f.readlines()
@@ -47,13 +49,14 @@ class IMLoc:
             
         print(f'>>>>> Database: {self.database_root} ({len(self.database)} images)')
         print(f'>>>>> Query: {self.query_list} ({len(self.query)} images)')
-        
-    def warp_coordinate(self, H, start_h, start_w):
+    
+    
+    def warp_coordinate(self, H, start_w, start_h):
         center = np.array([512, 512, 1], dtype=np.float32).reshape(3, 1)
         center_projection = np.dot(H, center)
         center_projection = center_projection / center_projection[2]
         center_projection = center_projection[:2].reshape(2)
-        center_projection = center_projection + np.array([start_h, start_w])
+        center_projection = center_projection + np.array([start_w, start_h])
         return center_projection
     
     def eval_imloc(self, save_results):
@@ -96,7 +99,7 @@ class IMLoc:
                     best_H = H_pred
                     current_index = database_index
                 
-                start_h, start_w = self.database[current_index].split('.')[0].split('_')[1:]
+                start_w, start_h = self.database[current_index].split('.')[0].split('_')[1:]
                 x, y = self.warp_coordinate(best_H, float(start_w), float(start_h))
                 result_str += f'{timestamp} {x} {y} 0 0.707107 0.0 -0.0 -0.707107\n'
                 print(f'{timestamp} in map:{current_index} with {max_matches} matches, X:{x}, Y:{y}')

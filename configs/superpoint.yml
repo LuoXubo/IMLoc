@@ -19,3 +19,8 @@ inloc:
   pairs: 'pairs-query-netvlad40-temporal.txt'
   rthres: 48
   skip_matches: 20
+imloc:
+  <<: *default
+  max_keypoints: -1
+  match_threshold: 0.0
+  imsize: 1024
