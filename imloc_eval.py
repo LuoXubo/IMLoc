@@ -21,6 +21,7 @@ class IMLoc:
         self.methods = []
         self.benchmark = 'imloc'
         self.root_dir = None
+        self.save_results = None
         
         self.load_config(config_path)
         self.load_dataset()
@@ -36,6 +37,7 @@ class IMLoc:
         self.methods = config['methods']
         self.benchmark = config['benchmark']
         self.root_dir = config['root_dir']
+        self.save_results = config['save_dir']
     
     def load_dataset(self):
         # Load database
@@ -56,20 +58,24 @@ class IMLoc:
         center_projection = np.dot(H, center)
         center_projection = center_projection / center_projection[2]
         center_projection = center_projection[:2].reshape(2)
+        
+        if center_projection[0] < 0 or center_projection[0] > 1024 or center_projection[1] < 0 or center_projection[1] > 1024:
+            center_projection = np.array([512, 512])
+        
         center_projection = center_projection + np.array([start_w, start_h])
         return center_projection
     
-    def eval_imloc(self, save_results):
+    def eval_imloc(self):
         for method in self.methods:
             result_str = ""
             args = parse_model_config(method, self.benchmark, self.root_dir)
             class_name = args['class']
             
             # One log file per method
-            if save_results:
-                if not os.path.exists(save_results):
-                    os.makedirs(save_results)
-                log_file = os.path.join(save_results, f"{class_name}.txt")
+            if self.save_results:
+                if not os.path.exists(self.save_results):
+                    os.makedirs(self.save_results)
+                log_file = os.path.join(self.save_results, f"{class_name}.txt")
                 log = open(log_file, "a")
                 lprint_ = lambda ms: lprint(ms, log)
 
@@ -104,5 +110,6 @@ class IMLoc:
                 result_str += f'{timestamp} {x} {y} 0 0.707107 0.0 -0.0 -0.707107\n'
                 print(f'{timestamp} in map:{current_index} with {max_matches} matches, X:{x}, Y:{y}')
             
-            if save_results:
+            if self.save_results:
+                result_str = result_str[:-2]
                 lprint_(result_str)

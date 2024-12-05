@@ -1,5 +1,6 @@
-database_root: /mnt/Datasets/tfr/output/8k_mars_1024_256/images
-query_root: /mnt/Datasets/tfr/mars-1/
+database_root: /mnt/Datasets/tfr/autod/moon_1024_256/images
+query_root: /mnt/Datasets/tfr/autod/moon-1
 methods: ['superpoint', 'd2net', 'xfeat', 'sift']
 benchmark: 'imloc'
 root_dir: '.'
+save_dir: results/moon-1
